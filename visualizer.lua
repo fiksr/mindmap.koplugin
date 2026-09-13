@@ -33,10 +33,10 @@ end
 function Visualizer.formatCharacterWeb(char_name, book_title, location_str, raw_ai_text)
     local out = {}
     table.insert(out, "==================================================")
-    table.insert(out, "CHARACTER DOSSIER: " .. char_name:upper())
+    table.insert(out, "👑 CHARACTER DOSSIER: " .. char_name:upper())
     table.insert(out, "Book: " .. (book_title or "Current Book"))
     table.insert(out, "Progress: " .. (location_str or "Current Location"))
-    table.insert(out, "(Strictly spoiler-guarded up to this chapter)")
+    table.insert(out, "🛡️ (Strictly spoiler-guarded up to this chapter)")
     table.insert(out, "==================================================\n")
 
     local lines = cleanLines(raw_ai_text)
@@ -87,9 +87,9 @@ end
 function Visualizer.formatFactionWeb(book_title, location_str, raw_ai_text)
     local out = {}
     table.insert(out, "==================================================")
-    table.insert(out, "FACTIONS & HOUSES: " .. (book_title or "Current Book"):upper())
+    table.insert(out, "🏰 FACTIONS & HOUSES: " .. (book_title or "Current Book"):upper())
     table.insert(out, "Progress: " .. (location_str or "Current Location"))
-    table.insert(out, "(Strictly spoiler-guarded up to this chapter)")
+    table.insert(out, "🛡️ (Strictly spoiler-guarded up to this chapter)")
     table.insert(out, "==================================================\n")
 
     local lines = cleanLines(raw_ai_text)
@@ -133,9 +133,9 @@ end
 function Visualizer.formatTimeline(book_title, location_str, raw_ai_text)
     local out = {}
     table.insert(out, "==================================================")
-    table.insert(out, "CHRONOLOGICAL TIMELINE: " .. (book_title or "Current Book"):upper())
+    table.insert(out, "⏳ CHRONOLOGICAL TIMELINE: " .. (book_title or "Current Book"):upper())
     table.insert(out, "Progress: " .. (location_str or "Current Location"))
-    table.insert(out, "(Strictly spoiler-guarded up to this chapter)")
+    table.insert(out, "🛡️ (Strictly spoiler-guarded up to this chapter)")
     table.insert(out, "==================================================\n")
 
     local lines = cleanLines(raw_ai_text)

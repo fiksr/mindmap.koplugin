@@ -42,25 +42,25 @@ function MindMap:onDispatcherRegisterActions()
     Dispatcher:registerAction("mindmap", {
         category = "none",
         event = "ShowMindMap",
-        title = _("MindMap"),
+        title = _("🧠 MindMap"),
         general = true,
     })
     Dispatcher:registerAction("mindmap_character", {
         category = "none",
         event = "ShowMindMapCharacter",
-        title = _("MindMap: Character Web"),
+        title = _("👤 Character Web"),
         general = true,
     })
     Dispatcher:registerAction("mindmap_factions", {
         category = "none",
         event = "ShowMindMapFactions",
-        title = _("MindMap: Factions & Houses"),
+        title = _("🏰 Factions & Houses"),
         general = true,
     })
     Dispatcher:registerAction("mindmap_timeline", {
         category = "none",
         event = "ShowMindMapTimeline",
-        title = _("MindMap: Plot Timeline"),
+        title = _("⏳ Plot Timeline"),
         general = true,
     })
 end
@@ -68,7 +68,7 @@ end
 function MindMap:onShowMindMap()
     local Menu = require("ui/widget/menu")
     local menu = Menu:new{
-        title = _("MindMap"),
+        title = _("🧠 MindMap"),
         item_table = self:getSubMenuItems(),
         is_borderless = true,
     }
@@ -269,7 +269,7 @@ end
 
 function MindMap:addToMainMenu(menu_items)
     menu_items.mindmap = {
-        text = _("MindMap"),
+        text = _("🧠 MindMap"),
         sorting_hint = "more_tools",
         sub_item_table_func = function()
             return self:getSubMenuItems()
@@ -282,21 +282,21 @@ function MindMap:getSubMenuItems()
     local has_doc = self.ui and self.ui.document and true or false
     return {
         {
-            text = _("Book Factions & Houses Web"),
+            text = _("🏰 Book Factions & Houses Web"),
             enabled = has_doc,
             callback = function()
                 self:onViewFactionWeb()
             end,
         },
         {
-            text = _("Chronological Plot Timeline"),
+            text = _("⏳ Chronological Plot Timeline"),
             enabled = has_doc,
             callback = function()
                 self:onViewTimeline()
             end,
         },
         {
-            text = _("Search Character Dossier"),
+            text = _("👤 Search Character Dossier"),
             enabled = has_doc,
             callback = function()
                 self:showCharacterSearchDialog()
@@ -322,7 +322,7 @@ function MindMap:getSubMenuItems()
             },
         },
         {
-            text = _("Import API Keys from Kindle Storage"),
+            text = _("🔑 Import API Keys from Kindle Storage"),
             callback = function()
                 local ok, imported, files = self.settings:importKeyFromFile()
                 if ok then
