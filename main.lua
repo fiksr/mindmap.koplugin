@@ -274,7 +274,8 @@ function MindMap:addToMainMenu(menu_items)
             return self:getSubMenuItems()
         end,
         sub_item_table = self:getSubMenuItems(),
-    } end
+    }
+end
 
 function MindMap:getSubMenuItems()
     local has_doc = self.ui and self.ui.document and true or false

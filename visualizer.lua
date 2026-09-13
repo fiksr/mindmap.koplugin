@@ -19,38 +19,28 @@ end
 
 local function splitByChar(str, sep)
     local parts = {}
-    for match in (str .. sep):gmatch("(.-)".. sep) do
+    for match in (str .. sep):gmatch("(.-)" .. sep) do
         table.insert(parts, match)
     end
     return parts
 end
 
-local function stripEmojis(str)
-    if not str then return "" end
-    local s = str:gsub("[ -¤][
-8-91][
-8-91][
-8-91]", "")
-    s = s:gsub("984[d-9]", "")
-    return s
-end
-
 local function stripMarkdown(s)
     if not s then return "" end
-    local clean = stripEmojis(s):gsub("%*%*", ""):gsub("%*", ""):gsub("^[#%s]+", ""):gsub("^%s+", ""):gsub("%s+$", "")
-    return clean
-end
-    local clean = s:gsub("%*%*", ""):gsub("%*", ""):gsub("^[#%s]+", ""):gsub("^%s+", ""):gsub("%s+$", "")
+    -- Strip UTF-8 4-byte emojis (U+10000 - U+10FFFF) and variation selectors
+    local clean = s:gsub("[\240-\244][\128-\191][\128-\191][\128-\191]", "")
+    clean = clean:gsub("\239\184[\144-\159]", "")
+    clean = clean:gsub("%*%*", ""):gsub("%*", ""):gsub("^[#%s]+", ""):gsub("^%s+", ""):gsub("%s+$", "")
     return clean
 end
 
 function Visualizer.formatCharacterWeb(char_name, book_title, location_str, raw_ai_text)
     local out = {}
     table.insert(out, "==================================================")
-    table.insert(out, "CHARACTER DOSSIER: ".. char_name:upper())
-    table.insert(out, "Book: ".. (book_title or "Current Book"))
-    table.insert(out, "Progress: ".. (location_str or "Current Location"))
-    table.insert(out, "️ (Strictly spoiler-guarded up to this chapter)")
+    table.insert(out, "CHARACTER DOSSIER: " .. char_name:upper())
+    table.insert(out, "Book: " .. (book_title or "Current Book"))
+    table.insert(out, "Progress: " .. (location_str or "Current Location"))
+    table.insert(out, "(Strictly spoiler-guarded up to this chapter)")
     table.insert(out, "==================================================\n")
 
     local lines = cleanLines(raw_ai_text)
@@ -79,7 +69,7 @@ function Visualizer.formatCharacterWeb(char_name, book_title, location_str, raw_
         -- Section Headings
         elseif l:find("^[#%*%-]*%s*[A-Z%s/&]+:") or l:find("^%*%*") or (l:find("^[A-Z]") and #l < 45 and not l:find("%.")) then
             local header = stripMarkdown(l):gsub(":$", "")
-            table.insert(out, "\n--- ".. header:upper() .. "---\n")
+            table.insert(out, "\n--- " .. header:upper() .. " ---\n")
 
         -- Bullets & Items
         elseif l:find("^[•%-%*]") then
@@ -88,7 +78,7 @@ function Visualizer.formatCharacterWeb(char_name, book_title, location_str, raw_
             if k and v then
                 table.insert(out, string.format("• %s:\n  %s\n", k, v))
             else
-                table.insert(out, "• ".. item)
+                table.insert(out, "• " .. item)
             end
         else
             table.insert(out, (stripMarkdown(l)))
@@ -101,9 +91,9 @@ end
 function Visualizer.formatFactionWeb(book_title, location_str, raw_ai_text)
     local out = {}
     table.insert(out, "==================================================")
-    table.insert(out, "FACTIONS & HOUSES: ".. (book_title or "Current Book"):upper())
-    table.insert(out, "Progress: ".. (location_str or "Current Location"))
-    table.insert(out, "️ (Strictly spoiler-guarded up to this chapter)")
+    table.insert(out, "FACTIONS & HOUSES: " .. (book_title or "Current Book"):upper())
+    table.insert(out, "Progress: " .. (location_str or "Current Location"))
+    table.insert(out, "(Strictly spoiler-guarded up to this chapter)")
     table.insert(out, "==================================================\n")
 
     local lines = cleanLines(raw_ai_text)
@@ -127,14 +117,14 @@ function Visualizer.formatFactionWeb(book_title, location_str, raw_ai_text)
             end
         elseif l:find("^[#%*%-]*%s*[A-Z%s/&]+:") or l:find("^%*%*") or (l:find("^[A-Z]") and #l < 45 and not l:find("%.")) then
             local header = stripMarkdown(l):gsub(":$", "")
-            table.insert(out, "\n--- ".. header:upper() .. "---\n")
+            table.insert(out, "\n--- " .. header:upper() .. " ---\n")
         elseif l:find("^[•%-%*]") then
             local item = stripMarkdown(l:gsub("^[•%-%*]%s*", ""))
             local k, v = item:match("^(.-):%s*(.+)$")
             if k and v then
                 table.insert(out, string.format("• %s:\n  %s\n", k, v))
             else
-                table.insert(out, "• ".. item)
+                table.insert(out, "• " .. item)
             end
         else
             table.insert(out, (stripMarkdown(l)))
@@ -147,19 +137,19 @@ end
 function Visualizer.formatTimeline(book_title, location_str, raw_ai_text)
     local out = {}
     table.insert(out, "==================================================")
-    table.insert(out, "CHRONOLOGICAL TIMELINE: ".. (book_title or "Current Book"):upper())
-    table.insert(out, "Progress: ".. (location_str or "Current Location"))
-    table.insert(out, "️ (Strictly spoiler-guarded up to this chapter)")
+    table.insert(out, "CHRONOLOGICAL TIMELINE: " .. (book_title or "Current Book"):upper())
+    table.insert(out, "Progress: " .. (location_str or "Current Location"))
+    table.insert(out, "(Strictly spoiler-guarded up to this chapter)")
     table.insert(out, "==================================================\n")
 
     local lines = cleanLines(raw_ai_text)
     for idx, l in ipairs(lines) do
         if l:find("^[#%*%-]*%s*Chapter") or l:find("^[#%*%-]*%s*Milestone") or l:find("^%d+%.") or l:find("^%[") then
             local header = stripMarkdown(l)
-            table.insert(out, "\n[".. header .. "]\n")
+            table.insert(out, "\n[" .. header .. "]\n")
         elseif l:find("^[•%-%*]") then
             local item = stripMarkdown(l:gsub("^[•%-%*]%s*", ""))
-            table.insert(out, "• ".. item)
+            table.insert(out, "• " .. item)
         else
             table.insert(out, (stripMarkdown(l)))
         end
