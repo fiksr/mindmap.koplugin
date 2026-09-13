@@ -4,6 +4,7 @@ Provides AI Character Relationship Webs, Faction Maps, and Chronological Plot Ti
 --]]--
 
 local Device = require("device")
+local Dispatcher = require("dispatcher")
 local InfoMessage = require("ui/widget/infomessage")
 local InputDialog = require("ui/widget/inputdialog")
 local UIManager = require("ui/uimanager")
@@ -36,9 +37,60 @@ local MindMap = WidgetContainer:extend{
     is_doc_only = false,
 }
 
+
+function MindMap:onDispatcherRegisterActions()
+    Dispatcher:registerAction("mindmap", {
+        category = "none",
+        event = "ShowMindMap",
+        title = _("MindMap"),
+        general = true,
+    })
+    Dispatcher:registerAction("mindmap_character", {
+        category = "none",
+        event = "ShowMindMapCharacter",
+        title = _("MindMap: Character Web"),
+        general = true,
+    })
+    Dispatcher:registerAction("mindmap_factions", {
+        category = "none",
+        event = "ShowMindMapFactions",
+        title = _("MindMap: Factions & Houses"),
+        general = true,
+    })
+    Dispatcher:registerAction("mindmap_timeline", {
+        category = "none",
+        event = "ShowMindMapTimeline",
+        title = _("MindMap: Plot Timeline"),
+        general = true,
+    })
+end
+
+function MindMap:onShowMindMap()
+    local Menu = require("ui/widget/menu")
+    local menu = Menu:new{
+        title = _("MindMap"),
+        item_table = self:getSubMenuItems(),
+        is_borderless = true,
+    }
+    UIManager:show(menu)
+end
+
+function MindMap:onShowMindMapCharacter()
+    self:showCharacterSearchDialog()
+end
+
+function MindMap:onShowMindMapFactions()
+    self:onViewFactionWeb()
+end
+
+function MindMap:onShowMindMapTimeline()
+    self:onViewTimeline()
+end
+
 function MindMap:init()
     self.settings = Settings:new()
     self.api = API:new(self.settings)
+    self:onDispatcherRegisterActions()
 
     if self.ui and self.ui.highlight then
         self:addToHighlightDialog()
