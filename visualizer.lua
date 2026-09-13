@@ -72,7 +72,7 @@ function Visualizer.formatCharacterWeb(char_name, book_title, location_str, raw_
                 table.insert(out, "  • " .. item)
             end
         else
-            table.insert(out, l:gsub("%*%*", ""))
+            table.insert(out, (l:gsub("%*%*", "")))
         end
     end
 
@@ -120,7 +120,7 @@ function Visualizer.formatFactionWeb(book_title, location_str, raw_ai_text)
                 table.insert(out, "   • " .. item)
             end
         else
-            table.insert(out, l:gsub("%*%*", ""))
+            table.insert(out, (l:gsub("%*%*", "")))
         end
     end
 
@@ -146,7 +146,7 @@ function Visualizer.formatTimeline(book_title, location_str, raw_ai_text)
             local item = l:gsub("^[•%-%*]%s*", ""):gsub("%*%*", "")
             table.insert(out, "  • " .. item)
         else
-            table.insert(out, "  " .. l:gsub("%*%*", ""))
+            table.insert(out, "  " .. (l:gsub("%*%*", "")))
         end
     end
 
