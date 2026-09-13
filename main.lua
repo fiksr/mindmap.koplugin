@@ -42,25 +42,25 @@ function MindMap:onDispatcherRegisterActions()
     Dispatcher:registerAction("mindmap", {
         category = "none",
         event = "ShowMindMap",
-        title = _("🧠 MindMap"),
+        title = _("MindMap"),
         general = true,
     })
     Dispatcher:registerAction("mindmap_character", {
         category = "none",
         event = "ShowMindMapCharacter",
-        title = _("👤 Character Web"),
+        title = _("Character Web"),
         general = true,
     })
     Dispatcher:registerAction("mindmap_factions", {
         category = "none",
         event = "ShowMindMapFactions",
-        title = _("🏰 Factions & Houses"),
+        title = _("Factions & Houses"),
         general = true,
     })
     Dispatcher:registerAction("mindmap_timeline", {
         category = "none",
         event = "ShowMindMapTimeline",
-        title = _("⏳ Plot Timeline"),
+        title = _("Plot Timeline"),
         general = true,
     })
 end
@@ -68,7 +68,7 @@ end
 function MindMap:onShowMindMap()
     local Menu = require("ui/widget/menu")
     local menu = Menu:new{
-        title = _("🧠 MindMap"),
+        title = _("MindMap"),
         item_table = self:getSubMenuItems(),
         is_borderless = true,
     }
@@ -111,7 +111,7 @@ function MindMap:getBookContext()
     local t_part, a_part = title:match("^(.-)%s+[%-–—]%s+(.+)$")
     if t_part and a_part and #t_part > 0 and #a_part > 0 then
         title = t_part
-        if not author or author == "Unknown Author" or #author == 0 then
+        if not author or author == "Unknown Author"or #author == 0 then
             author = a_part
         end
     end
@@ -120,7 +120,7 @@ function MindMap:getBookContext()
     if self.ui and self.ui.toc and self.ui.toc.getTocTitleOfCurrentPage then
         local ok_ct, ct = pcall(function() return self.ui.toc:getTocTitleOfCurrentPage() end)
         if ok_ct and ct and #ct > 0 then
-            chapter_title = ct:gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+            chapter_title = ct:gsub("[\r\n]+", ""):gsub("^%s+", ""):gsub("%s+$", "")
         end
     end
 
@@ -158,7 +158,7 @@ function MindMap:onViewCharacterWeb(char_name)
 
     local cached = self.settings:getCached(title, "characters", char_name)
     if cached and #cached > 0 then
-        Dialog.showCharacterWeb(char_name, title, location_str .. " (Offline Cache)", cached)
+        Dialog.showCharacterWeb(char_name, title, location_str .. "(Offline Cache)", cached)
         return
     end
 
@@ -186,7 +186,7 @@ function MindMap:onViewFactionWeb()
 
     local cached = self.settings:getCached(title, "factions", "main_web")
     if cached and #cached > 0 then
-        Dialog.showFactionWeb(title, location_str .. " (Offline Cache)", cached)
+        Dialog.showFactionWeb(title, location_str .. "(Offline Cache)", cached)
         return
     end
 
@@ -214,7 +214,7 @@ function MindMap:onViewTimeline()
 
     local cached = self.settings:getCached(title, "timelines", location_str)
     if cached and #cached > 0 then
-        Dialog.showTimeline(title, location_str .. " (Offline Cache)", cached)
+        Dialog.showTimeline(title, location_str .. "(Offline Cache)", cached)
         return
     end
 
@@ -269,7 +269,7 @@ end
 
 function MindMap:addToMainMenu(menu_items)
     menu_items.mindmap = {
-        text = _("🧠 MindMap"),
+        text = _("MindMap"),
         sorting_hint = "more_tools",
         sub_item_table_func = function()
             return self:getSubMenuItems()
@@ -282,21 +282,21 @@ function MindMap:getSubMenuItems()
     local has_doc = self.ui and self.ui.document and true or false
     return {
         {
-            text = _("🏰 Book Factions & Houses Web"),
+            text = _("Book Factions & Houses Web"),
             enabled = has_doc,
             callback = function()
                 self:onViewFactionWeb()
             end,
         },
         {
-            text = _("⏳ Chronological Plot Timeline"),
+            text = _("Chronological Plot Timeline"),
             enabled = has_doc,
             callback = function()
                 self:onViewTimeline()
             end,
         },
         {
-            text = _("👤 Search Character Dossier"),
+            text = _("Search Character Dossier"),
             enabled = has_doc,
             callback = function()
                 self:showCharacterSearchDialog()
@@ -311,27 +311,27 @@ function MindMap:getSubMenuItems()
             sub_item_table = {
                 {
                     text = _("English"),
-                    checked_func = function() return self.settings:getLanguage() == "english" end,
+                    checked_func = function() return self.settings:getLanguage() == "english"end,
                     callback = function() self.settings:setLanguage("english") end,
                 },
                 {
                     text = _("Serbian (Srpski - Latin)"),
-                    checked_func = function() return self.settings:getLanguage() == "serbian" end,
+                    checked_func = function() return self.settings:getLanguage() == "serbian"end,
                     callback = function() self.settings:setLanguage("serbian") end,
                 },
             },
         },
         {
-            text = _("🔑 Import API Keys from Kindle Storage"),
+            text = _("Import API Keys from Kindle Storage"),
             callback = function()
                 local ok, imported, files = self.settings:importKeyFromFile()
                 if ok then
                     local lines = { _("Keys imported successfully:") }
                     for prov, key in pairs(imported) do
-                        local mask = #key > 8 and (key:sub(1, 4) .. "..." .. key:sub(-4)) or key
+                        local mask = #key > 8 and (key:sub(1, 4) .. "...".. key:sub(-4)) or key
                         table.insert(lines, string.format("• %s: %s", prov:upper(), mask))
                     end
-                    table.insert(lines, "\n" .. _("You can switch between Groq and Gemini anytime!"))
+                    table.insert(lines, "\n".. _("You can switch between Groq and Gemini anytime!"))
                     UIManager:show(InfoMessage:new{
                         text = table.concat(lines, "\n"),
                         timeout = 6,
@@ -351,27 +351,27 @@ function MindMap:getSubMenuItems()
             sub_item_table = {
                 {
                     text = _("Groq (Free & Blazing Fast)"),
-                    checked_func = function() return self.settings:getProvider() == "groq" end,
+                    checked_func = function() return self.settings:getProvider() == "groq"end,
                     callback = function() self.settings:setProvider("groq") end,
                 },
                 {
                     text = _("Google Gemini"),
-                    checked_func = function() return self.settings:getProvider() == "gemini" end,
+                    checked_func = function() return self.settings:getProvider() == "gemini"end,
                     callback = function() self.settings:setProvider("gemini") end,
                 },
                 {
                     text = _("OpenAI (GPT-4o-mini)"),
-                    checked_func = function() return self.settings:getProvider() == "openai" end,
+                    checked_func = function() return self.settings:getProvider() == "openai"end,
                     callback = function() self.settings:setProvider("openai") end,
                 },
                 {
                     text = _("DeepSeek (DeepSeek Chat)"),
-                    checked_func = function() return self.settings:getProvider() == "deepseek" end,
+                    checked_func = function() return self.settings:getProvider() == "deepseek"end,
                     callback = function() self.settings:setProvider("deepseek") end,
                 },
                 {
                     text = _("Local Ollama (100% Offline LAN)"),
-                    checked_func = function() return self.settings:getProvider() == "ollama" end,
+                    checked_func = function() return self.settings:getProvider() == "ollama"end,
                     callback = function() self.settings:setProvider("ollama") end,
                 },
             },
@@ -382,44 +382,44 @@ function MindMap:getSubMenuItems()
             end,
             sub_item_table_func = function()
                 local prov = self.settings:getProvider()
-                if prov == "gemini" then
+                if prov == "gemini"then
                     return {
                         {
                             text = _("Gemini 3.5 Flash-Lite (500 RPD Free)"),
-                            checked_func = function() return self.settings:getModel() == "gemini-3.5-flash-lite" end,
+                            checked_func = function() return self.settings:getModel() == "gemini-3.5-flash-lite"end,
                             callback = function() self.settings:setModel("gemini-3.5-flash-lite") end,
                         },
                         {
                             text = _("Gemini 2.5 Flash (20 RPD Free / Paid)"),
-                            checked_func = function() return self.settings:getModel() == "gemini-2.5-flash" end,
+                            checked_func = function() return self.settings:getModel() == "gemini-2.5-flash"end,
                             callback = function() self.settings:setModel("gemini-2.5-flash") end,
                         },
                         {
                             text = _("Gemini 3.8 Flash"),
-                            checked_func = function() return self.settings:getModel() == "gemini-3.8-flash" end,
+                            checked_func = function() return self.settings:getModel() == "gemini-3.8-flash"end,
                             callback = function() self.settings:setModel("gemini-3.8-flash") end,
                         },
                         {
                             text = _("Gemini 3.7 Flash"),
-                            checked_func = function() return self.settings:getModel() == "gemini-3.7-flash" end,
+                            checked_func = function() return self.settings:getModel() == "gemini-3.7-flash"end,
                             callback = function() self.settings:setModel("gemini-3.7-flash") end,
                         },
                     }
-                elseif prov == "groq" then
+                elseif prov == "groq"then
                     return {
                         {
                             text = _("GPT-OSS 120B (Recommended — 1K RPD, Best Quality)"),
-                            checked_func = function() return self.settings:getModel() == "openai/gpt-oss-120b" end,
+                            checked_func = function() return self.settings:getModel() == "openai/gpt-oss-120b"end,
                             callback = function() self.settings:setModel("openai/gpt-oss-120b") end,
                         },
                         {
                             text = _("Qwen 3.8 27B (1K RPD — Strong Reasoning)"),
-                            checked_func = function() return self.settings:getModel() == "qwen/qwen3.8-27b" end,
+                            checked_func = function() return self.settings:getModel() == "qwen/qwen3.8-27b"end,
                             callback = function() self.settings:setModel("qwen/qwen3.8-27b") end,
                         },
                         {
                             text = _("GPT-OSS 20B (1K RPD — Fast & Lightweight)"),
-                            checked_func = function() return self.settings:getModel() == "openai/gpt-oss-20b" end,
+                            checked_func = function() return self.settings:getModel() == "openai/gpt-oss-20b"end,
                             callback = function() self.settings:setModel("openai/gpt-oss-20b") end,
                         },
                     }
@@ -446,7 +446,7 @@ function MindMap:getSubMenuItems()
                 dialog = InputDialog:new{
                     title = string.format(_("Enter %s API Key"), prov:upper()),
                     input = cur_key,
-                    input_hint = prov == "groq" and "gsk_..." or (prov == "gemini" and "AIza..." or "API Key"),
+                    input_hint = prov == "groq"and "gsk_..."or (prov == "gemini"and "AIza..."or "API Key"),
                     buttons = {
                         {
                             {

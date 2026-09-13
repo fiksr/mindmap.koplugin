@@ -16,23 +16,23 @@ end
 
 local function encodeJSON(val)
     if json and json.encode then return json.encode(val) end
-    if type(val) == "string" then
+    if type(val) == "string"then
         return string.format('"%s"', val:gsub('\\', '\\\\'):gsub('"', '\\"'):gsub('\n', '\\n'):gsub('\r', ''))
-    elseif type(val) == "number" or type(val) == "boolean" then
+    elseif type(val) == "number"or type(val) == "boolean"then
         return tostring(val)
-    elseif type(val) == "table" then
+    elseif type(val) == "table"then
         local is_array = (#val > 0)
         local parts = {}
         if is_array then
             for idx, v in ipairs(val) do
                 table.insert(parts, encodeJSON(v))
             end
-            return "[" .. table.concat(parts, ",") .. "]"
+            return "[".. table.concat(parts, ",") .. "]"
         else
             for k, v in pairs(val) do
                 table.insert(parts, string.format('"%s":%s', k, encodeJSON(v)))
             end
-            return "{" .. table.concat(parts, ",") .. "}"
+            return "{".. table.concat(parts, ",") .. "}"
         end
     end
     return "null"
@@ -58,12 +58,12 @@ function API:sendChat(messages, system_prompt, max_tokens)
     local model = self.settings:getModel()
     max_tokens = max_tokens or 650
 
-    if provider ~= "ollama" and #api_key == 0 then
+    if provider ~= "ollama"and #api_key == 0 then
         return nil, string.format("API Key for %s is not set", provider:upper())
     end
 
     local url
-    local headers = { "Content-Type: application/json" }
+    local headers = { "Content-Type: application/json"}
     local all_messages = {}
 
     if system_prompt and #system_prompt > 0 then
@@ -73,19 +73,19 @@ function API:sendChat(messages, system_prompt, max_tokens)
         table.insert(all_messages, m)
     end
 
-    if provider == "groq" then
+    if provider == "groq"then
         url = "https://api.groq.com/openai/v1/chat/completions"
-        table.insert(headers, "Authorization: Bearer " .. api_key)
-    elseif provider == "gemini" then
+        table.insert(headers, "Authorization: Bearer ".. api_key)
+    elseif provider == "gemini"then
         url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-        table.insert(headers, "Authorization: Bearer " .. api_key)
-    elseif provider == "openai" then
+        table.insert(headers, "Authorization: Bearer ".. api_key)
+    elseif provider == "openai"then
         url = "https://api.openai.com/v1/chat/completions"
-        table.insert(headers, "Authorization: Bearer " .. api_key)
-    elseif provider == "deepseek" then
+        table.insert(headers, "Authorization: Bearer ".. api_key)
+    elseif provider == "deepseek"then
         url = "https://api.deepseek.com/chat/completions"
-        table.insert(headers, "Authorization: Bearer " .. api_key)
-    elseif provider == "ollama" then
+        table.insert(headers, "Authorization: Bearer ".. api_key)
+    elseif provider == "ollama"then
         local base = self.settings:getOllamaUrl()
         url = base .. "/v1/chat/completions"
     end
@@ -106,15 +106,15 @@ function API:sendChat(messages, system_prompt, max_tokens)
 
     local cmd = string.format("curl -s -k -m 20 -X POST %s -d '%s' '%s' 2>/dev/null", header_args, safe_body, url)
     local handle = io.popen(cmd)
-    if not handle then return nil, "Network execution failed" end
+    if not handle then return nil, "Network execution failed"end
     local raw = handle:read("*a")
     handle:close()
 
-    if not raw or #raw == 0 then return nil, "No response from AI server" end
+    if not raw or #raw == 0 then return nil, "No response from AI server"end
     local res = decodeJSON(raw)
-    if not res then return nil, "Invalid JSON received from server" end
+    if not res then return nil, "Invalid JSON received from server"end
     if res.error then
-        local msg = (type(res.error) == "table" and res.error.message) or tostring(res.error)
+        local msg = (type(res.error) == "table"and res.error.message) or tostring(res.error)
         return nil, msg
     end
     if res.choices and res.choices[1] and res.choices[1].message then
@@ -133,7 +133,7 @@ function API:getCharacterWeb(title, author, location_str, char_name)
     local system_prompt = string.format([[
 You are an expert literary scholar and reading companion creating a detailed, spoiler-guarded Character Relationship Dossier.
 STRICT SPOILER RULES:
-1. The reader is currently at: "%s" in the book "%s" by %s.
+1. The reader is currently at: "%s"in the book "%s"by %s.
 2. You MUST ONLY describe facts, alliances, rivalries, and revelations that have occurred UP TO THIS EXACT LOCATION.
 3. NEVER reveal future betrayals, secret identities, deaths, plot twists, or events that happen later in the book or series.
 4. %s
@@ -156,7 +156,7 @@ function API:getBookFactionsWeb(title, author, location_str)
         or "Respond in clear English."
 
     local system_prompt = string.format([[
-You are an expert literary companion creating a Factions & Houses Relationship Overview for the book "%s" by %s.
+You are an expert literary companion creating a Factions & Houses Relationship Overview for the book "%s"by %s.
 STRICT SPOILER RULES:
 1. The reader is at: "%s".
 2. Only include factions, houses, guilds, or groups introduced up to this point.
@@ -183,7 +183,7 @@ function API:getPlotTimeline(title, author, location_str)
         or "Respond in clear English."
 
     local system_prompt = string.format([[
-You are an expert reading companion creating a Chronological Plot Milestone Timeline for "%s" by %s.
+You are an expert reading companion creating a Chronological Plot Milestone Timeline for "%s"by %s.
 STRICT SPOILER RULES:
 1. The reader is currently at: "%s".
 2. Provide a chronological list of 4-7 major plot milestones that have occurred from the beginning of the book UP TO THIS EXACT LOCATION.

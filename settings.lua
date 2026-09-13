@@ -24,18 +24,18 @@ end
 
 function Settings:get(key, default)
     if not G_reader_settings then return default end
-    local val = G_reader_settings:readSetting("mindmap_" .. key)
+    local val = G_reader_settings:readSetting("mindmap_".. key)
     if val ~= nil then return val end
     return default
 end
 
 function Settings:save(key, val)
     if not G_reader_settings then return end
-    G_reader_settings:saveSetting("mindmap_" .. key, val)
+    G_reader_settings:saveSetting("mindmap_".. key, val)
 end
 
 function Settings:getLanguage()
-    return self:get("language", "english") -- "english" or "serbian"
+    return self:get("language", "english") -- "english"or "serbian"
 end
 
 function Settings:setLanguage(lang)
@@ -52,12 +52,12 @@ end
 
 function Settings:getModel()
     local prov = self:getProvider()
-    return self:get("model_" .. prov, DEFAULT_MODELS[prov] or "openai/gpt-oss-120b")
+    return self:get("model_".. prov, DEFAULT_MODELS[prov] or "openai/gpt-oss-120b")
 end
 
 function Settings:setModel(m)
     local prov = self:getProvider()
-    self:save("model_" .. prov, m)
+    self:save("model_".. prov, m)
 end
 
 function Settings:getOllamaUrl()
@@ -70,21 +70,21 @@ end
 
 function Settings:getApiKey(prov)
     prov = prov or self:getProvider()
-    local val = self:get("api_key_" .. prov, "")
+    local val = self:get("api_key_".. prov, "")
     if val and #val > 0 then return val end
 
     -- Fallback to shared keys from bookrecap or morningpaper
     if G_reader_settings then
-        local shared_br = G_reader_settings:readSetting("bookrecap_api_key_" .. prov)
+        local shared_br = G_reader_settings:readSetting("bookrecap_api_key_".. prov)
         if shared_br and #shared_br > 0 then return shared_br end
 
-        local shared_mp = G_reader_settings:readSetting("morningpaper_api_key_" .. prov)
+        local shared_mp = G_reader_settings:readSetting("morningpaper_api_key_".. prov)
         if shared_mp and #shared_mp > 0 then return shared_mp end
 
         local legacy = G_reader_settings:readSetting("bookrecap_api_key")
         if legacy and #legacy > 0 then
-            if prov == "groq" and legacy:sub(1, 4) == "gsk_" then return legacy end
-            if prov == "gemini" and legacy:sub(1, 4) == "AIza" then return legacy end
+            if prov == "groq"and legacy:sub(1, 4) == "gsk_"then return legacy end
+            if prov == "gemini"and legacy:sub(1, 4) == "AIza"then return legacy end
         end
     end
     return ""
@@ -92,7 +92,7 @@ end
 
 function Settings:setApiKey(key, prov)
     prov = prov or self:getProvider()
-    self:save("api_key_" .. prov, key)
+    self:save("api_key_".. prov, key)
 end
 
 -- Import API keys from Kindle root storage
@@ -108,7 +108,7 @@ function Settings:importKeyFromFile()
     local files_found = {}
 
     for idx, path in ipairs(paths) do
-        if lfs.attributes(path, "mode") == "file" then
+        if lfs.attributes(path, "mode") == "file"then
             local f = io.open(path, "r")
             if f then
                 local content = f:read("*a")
@@ -116,10 +116,10 @@ function Settings:importKeyFromFile()
                 if content and #content > 0 then
                     content = content:gsub("[%s\r\n]+", "")
                     table.insert(files_found, path)
-                    if path:match("groq") or content:sub(1, 4) == "gsk_" then
+                    if path:match("groq") or content:sub(1, 4) == "gsk_"then
                         self:setApiKey(content, "groq")
                         imported["groq"] = content
-                    elseif path:match("gemini") or content:sub(1, 4) == "AIza" then
+                    elseif path:match("gemini") or content:sub(1, 4) == "AIza"then
                         self:setApiKey(content, "gemini")
                         imported["gemini"] = content
                     end
@@ -139,16 +139,16 @@ function Settings:getCacheKey(book_title, category, identifier)
 end
 
 function Settings:getCached(book_title, category, identifier)
-    local cache = self:get("cache_" .. category, {})
+    local cache = self:get("cache_".. category, {})
     local key = self:getCacheKey(book_title, category, identifier)
     return cache[key]
 end
 
 function Settings:saveCached(book_title, category, identifier, content)
-    local cache = self:get("cache_" .. category, {})
+    local cache = self:get("cache_".. category, {})
     local key = self:getCacheKey(book_title, category, identifier)
     cache[key] = content
-    self:save("cache_" .. category, cache)
+    self:save("cache_".. category, cache)
 end
 
 function Settings:clearCache()
