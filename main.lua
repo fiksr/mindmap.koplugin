@@ -40,18 +40,15 @@ function MindMap:init()
     self.settings = Settings:new()
     self.api = API:new(self.settings)
 
-    -- Hook into the Reader's highlight dialog for instant character relationship lookup
     if self.ui and self.ui.highlight then
         self:addToHighlightDialog()
     end
 
-    -- Register into KOReader's main menu
     if self.ui and self.ui.menu then
         self.ui.menu:registerToMainMenu(self)
     end
 end
 
--- Safely extract book title, author, and current reading location
 function MindMap:getBookContext()
     local doc = self.ui and self.ui.document
     local props = (doc and doc.getProps and doc:getProps()) or (self.ui and self.ui.doc_props) or {}
@@ -87,15 +84,14 @@ function MindMap:getBookContext()
 end
 
 function MindMap:addToHighlightDialog()
-    -- Inject "🕸️ MindMap: Relations" into the selection menu
     self.ui.highlight:addToHighlightDialog("02_mindmap_relations", function(this)
         return {
-            text = _("🕸️ MindMap: Relations"),
+            text = _("MindMap: Relations"),
             callback = function()
                 this:highlightFromHoldPos()
                 if not (this.selected_text and this.selected_text.text) then return end
 
-                local char_name = util.cleanupSelectedText(this.selected_text.text):gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+                local char_name = util.cleanupSelectedText(this.selected_text.text):gsub("^%s+", ""):gsub("%s+$", "")
                 if #char_name == 0 then return end
                 this:onClose(true)
 
@@ -108,7 +104,6 @@ end
 function MindMap:onViewCharacterWeb(char_name)
     local title, author, location_str = self:getBookContext()
 
-    -- Check local offline cache
     local cached = self.settings:getCached(title, "characters", char_name)
     if cached and #cached > 0 then
         Dialog.showCharacterWeb(char_name, title, location_str .. " (Offline Cache)", cached)
@@ -235,21 +230,21 @@ function MindMap:getSubMenuItems()
     local has_doc = self.ui and self.ui.document and true or false
     return {
         {
-            text = _("🏰 Book Factions & Houses Web"),
+            text = _("Book Factions & Houses Web"),
             enabled = has_doc,
             callback = function()
                 self:onViewFactionWeb()
             end,
         },
         {
-            text = _("⏳ Chronological Plot Timeline"),
+            text = _("Chronological Plot Timeline"),
             enabled = has_doc,
             callback = function()
                 self:onViewTimeline()
             end,
         },
         {
-            text = _("🔍 Search Character Dossier & Web"),
+            text = _("Search Character Dossier"),
             enabled = has_doc,
             callback = function()
                 self:showCharacterSearchDialog()
@@ -258,24 +253,24 @@ function MindMap:getSubMenuItems()
         {
             text_func = function()
                 local lang = self.settings:getLanguage()
-                local label = (lang == "serbian") and _("🇷🇸 Serbian (Srpski)") or _("🇬🇧 English")
-                return string.format(_("🌐 Language: %s"), label)
+                local label = (lang == "serbian") and _("Serbian (Srpski - Latin)") or _("English")
+                return string.format(_("Language: %s"), label)
             end,
             sub_item_table = {
                 {
-                    text = _("🇬🇧 English"),
+                    text = _("English"),
                     checked_func = function() return self.settings:getLanguage() == "english" end,
                     callback = function() self.settings:setLanguage("english") end,
                 },
                 {
-                    text = _("🇷🇸 Serbian (Srpski - Latin)"),
+                    text = _("Serbian (Srpski - Latin)"),
                     checked_func = function() return self.settings:getLanguage() == "serbian" end,
                     callback = function() self.settings:setLanguage("serbian") end,
                 },
             },
         },
         {
-            text = _("📥 Import API Keys from Kindle Storage"),
+            text = _("Import API Keys from Kindle Storage"),
             callback = function()
                 local ok, imported, files = self.settings:importKeyFromFile()
                 if ok then
@@ -299,7 +294,7 @@ function MindMap:getSubMenuItems()
         },
         {
             text_func = function()
-                return string.format(_("🤖 Provider: %s (%s)"), self.settings:getProvider():upper(), self.settings:getModel())
+                return string.format(_("AI Provider: %s (%s)"), self.settings:getProvider():upper(), self.settings:getModel())
             end,
             sub_item_table = {
                 {
@@ -331,7 +326,7 @@ function MindMap:getSubMenuItems()
         },
         {
             text_func = function()
-                return string.format(_("🧠 Model: %s"), self.settings:getModel())
+                return string.format(_("AI Model: %s"), self.settings:getModel())
             end,
             sub_item_table_func = function()
                 local prov = self.settings:getProvider()
@@ -357,11 +352,6 @@ function MindMap:getSubMenuItems()
                             checked_func = function() return self.settings:getModel() == "gemini-3.7-flash" end,
                             callback = function() self.settings:setModel("gemini-3.7-flash") end,
                         },
-                        {
-                            text = _("Gemini 3.6 Flash"),
-                            checked_func = function() return self.settings:getModel() == "gemini-3.6-flash" end,
-                            callback = function() self.settings:setModel("gemini-3.6-flash") end,
-                        },
                     }
                 elseif prov == "groq" then
                     return {
@@ -380,11 +370,6 @@ function MindMap:getSubMenuItems()
                             checked_func = function() return self.settings:getModel() == "openai/gpt-oss-20b" end,
                             callback = function() self.settings:setModel("openai/gpt-oss-20b") end,
                         },
-                        {
-                            text = _("Groq Compound (250 RPD)"),
-                            checked_func = function() return self.settings:getModel() == "groq/compound" end,
-                            callback = function() self.settings:setModel("groq/compound") end,
-                        },
                     }
                 end
                 return {
@@ -399,8 +384,8 @@ function MindMap:getSubMenuItems()
             text_func = function()
                 local prov = self.settings:getProvider()
                 local cur_key = self.settings:getApiKey(prov)
-                local status = (#cur_key > 0) and _("✓ configured") or _("✗ not set")
-                return string.format(_("⌨️ %s Key (%s)"), prov:upper(), status)
+                local status = (#cur_key > 0) and _("configured") or _("not set")
+                return string.format(_("Edit %s Key (%s)"), prov:upper(), status)
             end,
             callback = function()
                 local prov = self.settings:getProvider()
@@ -421,7 +406,7 @@ function MindMap:getSubMenuItems()
                                 text = _("Save"),
                                 is_enter_default = true,
                                 callback = function()
-                                    local val = dialog:getInputText():gsub("[\r\n%s]+", "")
+                                    local val = dialog:getInputText():gsub("[%s]+", "")
                                     self.settings:setApiKey(val, prov)
                                     UIManager:close(dialog)
                                     UIManager:show(InfoMessage:new{
@@ -438,7 +423,7 @@ function MindMap:getSubMenuItems()
             end,
         },
         {
-            text = _("🧹 Clear Offline Cache"),
+            text = _("Clear Offline Cache"),
             callback = function()
                 self.settings:clearCache()
                 UIManager:show(InfoMessage:new{ text = _("MindMap offline cache cleared."), timeout = 2 })

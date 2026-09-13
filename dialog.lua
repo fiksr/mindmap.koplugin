@@ -25,7 +25,7 @@ function Dialog.closeLoading(info_widget)
 end
 
 function Dialog.showCharacterWeb(char_name, book_title, location_str, text)
-    local title = string.format(_("🕸️ MindMap: %s"), char_name)
+    local title = string.format(_("Character Dossier: %s"), char_name)
     local viewer = TextViewer:new{
         title = title,
         text = text,
@@ -35,7 +35,7 @@ function Dialog.showCharacterWeb(char_name, book_title, location_str, text)
 end
 
 function Dialog.showFactionWeb(book_title, location_str, text)
-    local title = string.format(_("🏰 Factions Web: %s"), book_title)
+    local title = string.format(_("Factions Web: %s"), book_title)
     local viewer = TextViewer:new{
         title = title,
         text = text,
@@ -45,7 +45,7 @@ function Dialog.showFactionWeb(book_title, location_str, text)
 end
 
 function Dialog.showTimeline(book_title, location_str, text)
-    local title = string.format(_("⏳ Plot Timeline: %s"), book_title)
+    local title = string.format(_("Plot Timeline: %s"), book_title)
     local viewer = TextViewer:new{
         title = title,
         text = text,
