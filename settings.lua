@@ -114,8 +114,7 @@ function Settings:importKeyFromFile()
                 local content = f:read("*a")
                 f:close()
                 if content and #content > 0 then
-                    content = content:gsub("[
-%s]+", "")
+                    content = content:gsub("[%s\r\n]+", "")
                     table.insert(files_found, path)
                     if path:match("groq") or content:sub(1, 4) == "gsk_" then
                         self:setApiKey(content, "groq")
