@@ -344,6 +344,25 @@ function MindMap:getSubMenuItems()
             end,
         },
         {
+            text = _("Inherit Shared Keys from Storage"),
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                local found = self.settings:inheritSharedKeys()
+                if found > 0 then
+                    UIManager:show(InfoMessage:new{
+                        text = string.format(_("Found and linked %d shared API keys from storage!"), found),
+                        timeout = 3,
+                    })
+                else
+                    UIManager:show(InfoMessage:new{
+                        text = _("No key files found on Kindle storage (/mnt/us/).\n\nYou can place groq_key.txt or gemini_key.txt via USB,\nthen tap this button again!"),
+                        timeout = 6,
+                    })
+                end
+                if touchmenu_instance then touchmenu_instance:updateItems() end
+            end,
+        },
+        {
             text_func = function()
                 return string.format(_("AI Provider: %s (%s)"), self.settings:getProvider():upper(), self.settings:getModel())
             end,
@@ -351,26 +370,31 @@ function MindMap:getSubMenuItems()
                 {
                     text = _("Groq (Free & Blazing Fast)"),
                     checked_func = function() return self.settings:getProvider() == "groq" end,
+                    keep_menu_open = true,
                     callback = function() self.settings:setProvider("groq") end,
                 },
                 {
                     text = _("Google Gemini"),
                     checked_func = function() return self.settings:getProvider() == "gemini" end,
+                    keep_menu_open = true,
                     callback = function() self.settings:setProvider("gemini") end,
                 },
                 {
                     text = _("OpenAI (GPT-4o-mini)"),
                     checked_func = function() return self.settings:getProvider() == "openai" end,
+                    keep_menu_open = true,
                     callback = function() self.settings:setProvider("openai") end,
                 },
                 {
                     text = _("DeepSeek (DeepSeek Chat)"),
                     checked_func = function() return self.settings:getProvider() == "deepseek" end,
+                    keep_menu_open = true,
                     callback = function() self.settings:setProvider("deepseek") end,
                 },
                 {
                     text = _("Local Ollama (100% Offline LAN)"),
                     checked_func = function() return self.settings:getProvider() == "ollama" end,
+                    keep_menu_open = true,
                     callback = function() self.settings:setProvider("ollama") end,
                 },
             },
@@ -386,21 +410,25 @@ function MindMap:getSubMenuItems()
                         {
                             text = _("Gemini 3.5 Flash-Lite (500 RPD Free)"),
                             checked_func = function() return self.settings:getModel() == "gemini-3.5-flash-lite" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("gemini-3.5-flash-lite") end,
                         },
                         {
                             text = _("Gemini 2.5 Flash (20 RPD Free / Paid)"),
                             checked_func = function() return self.settings:getModel() == "gemini-2.5-flash" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("gemini-2.5-flash") end,
                         },
                         {
                             text = _("Gemini 3.8 Flash"),
                             checked_func = function() return self.settings:getModel() == "gemini-3.8-flash" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("gemini-3.8-flash") end,
                         },
                         {
                             text = _("Gemini 3.7 Flash"),
                             checked_func = function() return self.settings:getModel() == "gemini-3.7-flash" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("gemini-3.7-flash") end,
                         },
                     }
@@ -409,25 +437,30 @@ function MindMap:getSubMenuItems()
                         {
                             text = _("GPT-OSS 120B (Recommended — 1K RPD, Best Quality)"),
                             checked_func = function() return self.settings:getModel() == "openai/gpt-oss-120b" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("openai/gpt-oss-120b") end,
                         },
                         {
                             text = _("Qwen 3.8 27B (1K RPD — Strong Reasoning)"),
                             checked_func = function() return self.settings:getModel() == "qwen/qwen3.8-27b" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("qwen/qwen3.8-27b") end,
                         },
                         {
                             text = _("GPT-OSS 20B (1K RPD — Fast & Lightweight)"),
                             checked_func = function() return self.settings:getModel() == "openai/gpt-oss-20b" end,
+                            keep_menu_open = true,
                             callback = function() self.settings:setModel("openai/gpt-oss-20b") end,
                         },
-                    } end
+                    }
+                end
                 return {
                     {
                         text = string.format(_("Current: %s"), self.settings:getModel()),
                         enabled = false,
                     },
-                } end,
+                }
+            end,
         },
         {
             text_func = function()
@@ -436,7 +469,7 @@ function MindMap:getSubMenuItems()
                 local status = (#cur_key > 0) and _("configured") or _("not set")
                 return string.format(_("Edit %s Key (%s)"), prov:upper(), status)
             end,
-            callback = function()
+            callback = function(touchmenu_instance)
                 local prov = self.settings:getProvider()
                 local cur_key = self.settings:getApiKey(prov)
                 local dialog
@@ -449,7 +482,14 @@ function MindMap:getSubMenuItems()
                             {
                                 text = _("Cancel"),
                                 id = "close",
-                                callback = function() UIManager:close(dialog) end,
+                                callback = function()
+                                    UIManager:close(dialog)
+                                    if touchmenu_instance then
+                                        touchmenu_instance:updateItems()
+                                    else
+                                        self:onShowMindMap()
+                                    end
+                                end,
                             },
                             {
                                 text = _("Save"),
@@ -462,6 +502,11 @@ function MindMap:getSubMenuItems()
                                         text = string.format(_("%s Key saved!"), prov:upper()),
                                         timeout = 2,
                                     })
+                                    if touchmenu_instance then
+                                        touchmenu_instance:updateItems()
+                                    else
+                                        self:onShowMindMap()
+                                    end
                                 end,
                             },
                         },
@@ -473,11 +518,14 @@ function MindMap:getSubMenuItems()
         },
         {
             text = _("Clear Offline Cache"),
-            callback = function()
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
                 self.settings:clearCache()
                 UIManager:show(InfoMessage:new{ text = _("MindMap offline cache cleared."), timeout = 2 })
+                if touchmenu_instance then touchmenu_instance:updateItems() end
             end,
         },
-    } end
+    }
+end
 
 return MindMap
